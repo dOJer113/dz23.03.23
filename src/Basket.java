@@ -1,7 +1,7 @@
 import java.io.*;
-import java.util.Arrays;
 
-public class Basket {
+public class Basket  implements  Serializable{
+    private static final long serialVersionUID =1l;
     private String[] products;
     private int[] prices;
     private int[] quantity;
@@ -26,21 +26,9 @@ public class Basket {
         }
 
     }
-    public void printCart() throws IOException {
+    public void printCart() {
         int total = 0;
         System.out.println("Ваша корзина:");
-        BufferedReader reader = new BufferedReader(new FileReader(textFile));
-        String[] products = reader.readLine().split(" ");
-        String[] quantityStr = reader.readLine().split(" ");
-        String[] pricesStr = reader.readLine().split(" ");
-        for(int i=0;i<prices.length;i++){
-            prices[i] = Integer.parseInt(pricesStr[i]);
-        }
-        Basket basket = new Basket(products,prices);
-        for(int i=0;i<quantityStr.length;i++){
-            quantity[i]=Integer.parseInt(quantityStr[i]);
-            basket.addToCart(i+1,quantity[i]);
-        }
         for(int i =0;i<products.length;i++){
             if (quantity[i]!=0){
                 int sum = (quantity[i]*prices[i]);
@@ -49,7 +37,6 @@ public class Basket {
             }
         }
         System.out.println("Итого: " + total + "руб");
-
     }
     public void saveTxt(File textFile) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(textFile));
@@ -86,6 +73,17 @@ public class Basket {
     }
     public void getFile(File textFile){
         this.textFile = textFile;
+    }
+    public void  saveBin(File textFile) throws IOException{
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(textFile))){
+            oos.writeObject(this);
+        }
+    }
+    public static Basket loadFromBinFile(File textFile) throws IOException, ClassNotFoundException {
+        ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(textFile));
+        Basket basket = null;
+        basket = (Basket) objectInputStream.readObject();
+        return basket;
     }
 
 }
